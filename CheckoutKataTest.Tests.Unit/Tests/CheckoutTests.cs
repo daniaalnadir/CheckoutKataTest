@@ -26,7 +26,7 @@ public class CheckoutTests
         };
 
         _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
-        
+
         var checkout = new CheckoutService();
 
         // Act
@@ -49,7 +49,7 @@ public class CheckoutTests
         };
 
         _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
-        
+
         var pricingStrategies = new List<IPricingStrategy>()
         {
             new VolumePricingStrategy(product, 3, 130)
@@ -79,7 +79,7 @@ public class CheckoutTests
         };
 
         _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
-        
+
         var pricingStrategies = new List<IPricingStrategy>()
         {
             new VolumePricingStrategy(product, 3, 130)
@@ -110,7 +110,7 @@ public class CheckoutTests
         };
 
         _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
-        
+
         var pricingStrategies = new List<IPricingStrategy>()
         {
             new VolumePricingStrategy(product, 3, 130)
@@ -140,7 +140,7 @@ public class CheckoutTests
         };
 
         _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
-        
+
         var pricingStrategies = new List<IPricingStrategy>()
         {
             new VolumePricingStrategy(product, 3, 130)
@@ -172,7 +172,7 @@ public class CheckoutTests
             Sku = "A",
             UnitPrice = 50
         };
-        
+
         var productTwo = new Product()
         {
             Sku = "B",
@@ -196,7 +196,7 @@ public class CheckoutTests
 
         checkout.Scan(product.Sku);
         checkout.Scan(productTwo.Sku);
-        
+
         var total = checkout.GetTotalPrice();
 
         // Assert
@@ -208,29 +208,128 @@ public class CheckoutTests
         GetTotalPrice_ShouldReturnCorrectPrice_WhenMultipleProductsAndStrategiesPassedAndThresholdsMetExactly()
     {
         // Arrange
-        
+        var product = new Product()
+        {
+            Sku = "A",
+            UnitPrice = 50
+        };
+
+        var productTwo = new Product()
+        {
+            Sku = "B",
+            UnitPrice = 30
+        };
+
+        _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
+        _productRepository.Setup(x => x.GetProductBySku(productTwo.Sku)).Returns(productTwo);
+
+        var pricingStrategies = new List<IPricingStrategy>()
+        {
+            new VolumePricingStrategy(product, 3, 130),
+            new XForThePriceOfYStrategy(productTwo, 4, 3)
+        };
+
+        var checkout = new CheckoutService(pricingStrategies);
+
         // Act
-        
+        checkout.Scan(product.Sku);
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        var total = checkout.GetTotalPrice();
+
         // Assert
+        total.Should().Be(220);
     }
 
     [Fact]
     public void GetTotalPrice_ShouldReturnCorrectPrice_WhenMultipleProductsAndStrategiesPassedAndThresholdsExceeded()
     {
         // Arrange
-        
+        var product = new Product()
+        {
+            Sku = "A",
+            UnitPrice = 50
+        };
+
+        var productTwo = new Product()
+        {
+            Sku = "B",
+            UnitPrice = 30
+        };
+
+        _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
+        _productRepository.Setup(x => x.GetProductBySku(productTwo.Sku)).Returns(productTwo);
+
+        var pricingStrategies = new List<IPricingStrategy>()
+        {
+            new VolumePricingStrategy(product, 3, 130),
+            new XForThePriceOfYStrategy(productTwo, 4, 3)
+        };
+
+        var checkout = new CheckoutService(pricingStrategies);
+
         // Act
-        
+        checkout.Scan(product.Sku);
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        var total = checkout.GetTotalPrice();
+
         // Assert
+        total.Should().Be(250);
     }
 
     [Fact]
     public void GetTotalPrice_ShouldReturnCorrectPrice_WhenMultipleStrategiesPassedAndThresholdIsNotExceeded()
     {
         // Arrange
-        
+        var product = new Product()
+        {
+            Sku = "A",
+            UnitPrice = 50
+        };
+
+        var productTwo = new Product()
+        {
+            Sku = "B",
+            UnitPrice = 30
+        };
+
+        _productRepository.Setup(x => x.GetProductBySku(product.Sku)).Returns(product);
+        _productRepository.Setup(x => x.GetProductBySku(productTwo.Sku)).Returns(productTwo);
+
+        var pricingStrategies = new List<IPricingStrategy>()
+        {
+            new VolumePricingStrategy(product, 3, 130),
+            new XForThePriceOfYStrategy(productTwo, 4, 3)
+        };
+
+        var checkout = new CheckoutService(pricingStrategies);
+
         // Act
-        
+        checkout.Scan(product.Sku);
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        checkout.Scan(product.Sku);
+        checkout.Scan(productTwo.Sku);
+        checkout.Scan(productTwo.Sku);
+
+        var total = checkout.GetTotalPrice();
+
         // Assert
+        total.Should().Be(220);
     }
 }

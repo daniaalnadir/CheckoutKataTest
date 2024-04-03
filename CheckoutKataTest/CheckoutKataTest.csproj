@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CheckoutKataTest.Business\CheckoutKataTest.Business.csproj" />
+  </ItemGroup>
+
 </Project>
