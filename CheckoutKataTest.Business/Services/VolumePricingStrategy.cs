@@ -3,27 +3,26 @@ using CheckoutKataTest.Business.Services.Contracts;
 
 namespace CheckoutKataTest.Business.Services;
 
-public class VolumePricingStrategy : IPricingStrategy
+public class VolumePricingStrategy : RegularPricingStrategy
 {
     private readonly int _volumePrice;
     private readonly int _volumeThreshold;
 
     /// <summary>
-    /// 
+    /// The volume pricing strategy applies discounts based on volume. For example, if a product has a unit
+    /// price of 50 we can set and offer of 3 for 130
     /// </summary>
     /// <param name="product"></param>
     /// <param name="volumeThreshold">How many items are needed in the basket for the rule to trigger</param>
     /// <param name="volumePrice">How much we want to charge if the threshold is met</param>
-    public VolumePricingStrategy(Product product, int volumeThreshold, int volumePrice)
+    public VolumePricingStrategy(Product product, int volumeThreshold, int volumePrice) : base(product)
     {
         _volumePrice = volumePrice;
         _volumeThreshold = volumeThreshold;
         Product = product;
     }
 
-    public Product Product { get; set; }
-
-    public int GetTotal(int units)
+    public override int GetTotal(int units)
     {
         if (units >= _volumeThreshold)
         {
@@ -44,5 +43,7 @@ public class VolumePricingStrategy : IPricingStrategy
                 return price;
             }
         }
+
+        return base.GetTotal(units);
     }
 }
