@@ -32,10 +32,17 @@ public class CheckoutService : ICheckoutService
             var pricingStrategiesForProduct = _pricingStrategies?
                 .Where(r => string.Equals(r.Product.Sku, item.Key, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
-
-            foreach (var pricingStrategy in pricingStrategiesForProduct)
+            if (pricingStrategiesForProduct == null || pricingStrategiesForProduct?.Count == 0)
             {
-                total += pricingStrategy.GetTotal(item.Count());
+                var regularPricingStrategy = new RegularPricingStrategy(_productRepository.GetProductBySku(item.Key));
+                total += regularPricingStrategy.GetTotal(item.Count());
+            }
+            else
+            {
+                foreach (var pricingStrategy in pricingStrategiesForProduct)
+                {
+                    total += pricingStrategy.GetTotal(item.Count());
+                }
             }
         }
 
